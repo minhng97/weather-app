@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 import './App.css';
 
@@ -22,20 +24,22 @@ const dateBuilder = (d) => {
 function App() {
   const [query, setQuery] = useState('')
   const [weather, setWeather] = useState({})
+  AOS.init()
 
   const search = event => {
     if (event.key === "Enter") {
       fetch(`${api.base}weather?q=${query}&units=metric&APPID=${api.key}`)
         .then(res => res.json())
         .then(result => {
+          console.log(result)
+
           setWeather(result)
           localStorage.setItem('query', query)
           setQuery('')
-          console.log(result)
         })
     }
   }
-  function weatherCss()  {
+  function weatherCss() {
     if (typeof weather.main != 'undefined') {
       if (weather.main.temp > 16) { return "app warm" }
       return "app"
@@ -50,7 +54,7 @@ function App() {
         <div className="search-box">
           <input type="text"
             className="search-bar"
-            placeholder="search"
+            placeholder="search city..."
             autoComplete="on"
             onChange={e => setQuery(e.target.value)}
             value={query}
@@ -80,8 +84,8 @@ function App() {
           : (<>
             <div className="location-box">
               <div className="location">
-                
-            </div>
+
+              </div>
               <div className="date">
                 {dateBuilder(new Date())}
               </div>
@@ -89,13 +93,34 @@ function App() {
 
             <div className="weather-box">
               <div className="temp">
-              °C
+                °C
             </div>
               <div className="weather">
-              
-             
-            </div>
+
+
+              </div>
             </div></>)}
+
+
+        {(typeof weather.main != "undefined")
+          ? (<div style={{marginTop: "500px"}}>
+            <div
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              style={{ color: "whitesmoke" }}>
+             <div style={{display: "flex", alignItems: "center"}}>
+             <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt={weather.weather[0].icon} />
+              Cloudiness: {weather.clouds.all} %
+              
+              </div>
+              <div style={{display: "flex"}}><p> Pressure: </p> <span> {weather.main.pressure} hpa</span></div>
+              <div style={{display: "flex"}}> <p> Humidity: </p> <span> {weather.main.humidity}</span></div>
+              <div style={{display: "flex"}}> <p> Visibility: </p> <span> {weather.visibility}</span></div>
+              <div style={{display: "flex"}}> <p> Wind: </p> <span> {weather.wind.speed}</span></div>
+              <div style={{display: "flex"}}> <p>Description: </p> {weather.weather[0].description} </div>
+
+            </div></div>)
+          : (null)}
 
 
 
