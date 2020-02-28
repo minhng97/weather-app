@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import ScreenCapture from './ScreenCapture'
 
 import './App.css';
 
@@ -24,7 +25,10 @@ const dateBuilder = (d) => {
 function App() {
   const [query, setQuery] = useState('')
   const [weather, setWeather] = useState({})
+  const [screenCapture, handleScreenCapture] = useState('')
   AOS.init()
+
+
 
   const search = event => {
     if (event.key === "Enter") {
@@ -63,24 +67,61 @@ function App() {
 
         {(typeof weather.main != "undefined") ? (
           <>
-            <div className="location-box">
-              <div className="location">
-                {weather.name}, {weather.sys.country}
-              </div>
-              <div className="date">
-                {dateBuilder(new Date())}
-              </div>
-            </div>
 
-            <div className="weather-box">
-              <div className="temp">
-                {Math.round(weather.main.temp)}°C
+            <ScreenCapture onEndCapture={handleScreenCapture}>
+              {({ onStartCapture }) => (
+                <>
+
+                  <div className="location-box">
+                    <div className="location">
+                      {weather.name}, {weather.sys.country}
+                    </div>
+                    <div className="date">
+                      {dateBuilder(new Date())}
+                    </div>
+                  </div>
+
+                  <div className="weather-box">
+                    <div className="temp">
+                      {Math.round(weather.main.temp)}°C
               </div>
-              <div className="weather">
-                {weather.weather[0].main}
+                    <div className="weather">
+                      {weather.weather[0].main}
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: "500px" }}>
+            <div
+              data-aos="fade-up"
+              data-aos-anchor-placement="top-bottom"
+              style={{ color: "whitesmoke" }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt={weather.weather[0].icon} />
+                Cloudiness: {weather.clouds.all} %
+  
               </div>
-            </div></>
-        )
+              <div style={{ display: "flex" }}><p> Pressure: </p> <span> {weather.main.pressure} hpa</span></div>
+              <div style={{ display: "flex" }}> <p> Humidity: </p> <span> {weather.main.humidity}</span></div>
+              <div style={{ display: "flex" }}> <p> Visibility: </p> <span> {weather.visibility}</span></div>
+              <div style={{ display: "flex" }}> <p> Wind: </p> <span> {weather.wind.speed}</span></div>
+              <div style={{ display: "flex" }}> <p>Description: </p> {weather.weather[0].description} </div>
+
+            </div></div>
+
+                  <button style={{
+                    padding: " 4px",
+                    borderRadius: '6px',
+                    outline: 'none',
+                    border: 'none',
+                    background: '#fff5ee99'
+                  }} onClick={onStartCapture}>Capture</button>
+                  <br />
+                  <br />
+                  <img src={screenCapture} alt="" />
+                </>)}
+            </ScreenCapture>
+          </>)
+
           : (<>
             <div className="location-box">
               <div className="location">
@@ -103,29 +144,13 @@ function App() {
 
 
         {(typeof weather.main != "undefined")
-          ? (<div style={{marginTop: "500px"}}>
-            <div
-              data-aos="fade-up"
-              data-aos-anchor-placement="top-bottom"
-              style={{ color: "whitesmoke" }}>
-             <div style={{display: "flex", alignItems: "center"}}>
-             <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt={weather.weather[0].icon} />
-              Cloudiness: {weather.clouds.all} %
-              
-              </div>
-              <div style={{display: "flex"}}><p> Pressure: </p> <span> {weather.main.pressure} hpa</span></div>
-              <div style={{display: "flex"}}> <p> Humidity: </p> <span> {weather.main.humidity}</span></div>
-              <div style={{display: "flex"}}> <p> Visibility: </p> <span> {weather.visibility}</span></div>
-              <div style={{display: "flex"}}> <p> Wind: </p> <span> {weather.wind.speed}</span></div>
-              <div style={{display: "flex"}}> <p>Description: </p> {weather.weather[0].description} </div>
-
-            </div></div>)
+          ? ('')
           : (null)}
 
 
 
       </main>
-    </div>
+    </div >
   );
 }
 
